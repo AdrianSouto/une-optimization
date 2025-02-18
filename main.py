@@ -7,7 +7,9 @@ import scipy.optimize as spo
 def error_cuadratico(asignado):
     error = 0
     for i in range(len(xdata)):
-        error += (asignado[i] - demanda[i]) ** 2
+        deficit = (demanda[i] - asignado[i]) ** 2
+        consumoPerHourProvince = demanda[i] / 24
+        error += deficit / consumoPerHourProvince
     return error
 
 # Constraint function: sum of asignado should be less than or equal to generacionTotal
