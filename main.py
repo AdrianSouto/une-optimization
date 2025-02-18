@@ -4,23 +4,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as spo
 
-def error_cuadratico(p):
+def error_cuadratico(asignado):
     error = 0
     for i in range(len(xdata)):
-        error += (p[i] - demanda[i]) ** 2
+        error += (asignado[i] - demanda[i]) ** 2
     return error
 
-# Constraint function: sum of p should be less than or equal to mwDisponible
-def constraint_sum(p):
-    return mwDisponible - np.sum(p)
+# Constraint function: sum of asignado should be less than or equal to generacionTotal
+def constraint_sum(asignado):
+    return generacionTotal - np.sum(asignado)
 
 #Restriccion, el deficit de la habana no puede ser mayor al 10% de la demanda
-def constraint_habana(p):
-    return (5/100 * demanda[1]) - (demanda[1] - p[1])
+def constraint_habana(asignado):
+    return (5/100 * demanda[1]) - (demanda[1] - asignado[1])
 
-def constraint_never_exceed(p):
-    for i in range(len(p)):
-        if p[i] < 0:
+def constraint_never_exceed(asignado):
+    for i in range(len(asignado)):
+        if asignado[i] < 0:
             return -1
     return 1
 
@@ -55,7 +55,7 @@ termoelectricas = [
 ]
 
 # Calcular la disponibilidad total de MW
-mwDisponible = sum([t["capacidad"] for t in termoelectricas])
+generacionTotal = sum([t["capacidad"] for t in termoelectricas])
 
 demanda = [300, 800, 200, 180, 400, 350, 150, 300, 150, 200, 450, 500, 250, 600, 250]
 
@@ -70,21 +70,25 @@ cons = [
 ]
 
 # Perform the optimization with constraints
-results2 = spo.minimize(error_cuadratico, [0]*15, constraints=cons)
+asignadoResult = spo.minimize(error_cuadratico, [0]*15, constraints=cons)
 
 # Plot the results
-plt.plot(xdata, results2.x, 'bo')
+plt.plot(xdata, asignadoResult.x, 'bo')
 plt.xticks(ticks=xdata, labels=provinceMapper, rotation=45, ha='right')
 plt.show()
 
 # Print the results
-print(f"Optimization result: {results2}")
+print(f"Optimization result: {asignadoResult}")
 
+totalDeficit = sum(demanda) - sum(asignadoResult.x)
 for i in range(len(xdata)):
-    print(f"{provinceMapper[i]}: Demanda: {(demanda[i])} , Asignados: {results2.x[i]}, Deficit: {(demanda[i] - results2.x[i])} , Horas Apagon: {((demanda[i] - results2.x[i]))/(mwDisponible/(15*24))}")
+    deficit = demanda[i] - asignadoResult.x[i]
+    consumoPerHourProvince = demanda[i] / 24
+    timeToSatisfyAssigned = deficit / consumoPerHourProvince
+    print(f"{provinceMapper[i]}: Demanda: {(demanda[i])} , Asignados: {asignadoResult.x[i]}, Deficit: {deficit} , Horas Apagon: {timeToSatisfyAssigned}")
 
-print(f"total Asignado: {sum(results2.x)}")
-print(f"total generado: {mwDisponible}")
+print(f"total Asignado: {sum(asignadoResult.x)}")
+print(f"total generado: {generacionTotal}")
 sumD = sum(demanda)
 print("Demanda Total:",sum(demanda))
-print(f"Deficit Total: {sumD - sum(results2.x)}")
+print(f"Deficit Total: {totalDeficit}")
