@@ -190,9 +190,12 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         for t in range(horas):
             resultados[i, t] = pulp.value(x[i, t])
 
-    # Imprimir los intervalos de apagado y encendido para cada bloque
+    # Create a list to store the intervals for each block
+    block_intervals = []
+
+    # Iterate through the blocks and their respective hours to determine the intervals of being turned on
     for i in range(num_bloques):
-        print(f"Bloque {i + 1}:")
+        intervals = []
         encendido = False
         inicio_intervalo = 0
 
@@ -202,11 +205,15 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
                 inicio_intervalo = t
             elif resultados[i, t] == 0 and encendido:
                 encendido = False
-                print(f"  Encendido desde hora {inicio_intervalo} hasta hora {t - 1}")
+                intervals.append((inicio_intervalo, t - 1))
 
         if encendido:
-            print(f"  Encendido desde hora {inicio_intervalo} hasta hora {horas - 1}")
+            intervals.append((inicio_intervalo, horas - 1))
 
+        block_intervals.append({
+            "block": i + 1,
+            "intervals": intervals
+        })
     # Verificar la energía consumida para cada bloque
     for i in range(num_bloques):
         horas_encendido = np.sum(resultados[i, :])
@@ -231,10 +238,14 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
     plt.savefig(f"static\\power-cut-hour.png")
     plt.show()
 
+
+
+    # Return the updated dictionary
     return {
         "provinces": provinceDataResponse,
         "totalDemand": sum(demanda),
         "totalGeneration": generacionTotal,
         "totalDeficit": totalDeficit,
-        "chartUrl": "optimization_result.png"
+        "chartUrl": "optimization_result.png",
+        "blockIntervals": block_intervals
     }
