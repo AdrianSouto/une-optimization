@@ -9,7 +9,7 @@ CORS(app)
 @app.route('/api/execute', methods=['POST'])
 def execute_script():
     data = request.json
-    result = execute_optimization(data['provincesDemand'], data['termoelectricas'])
+    result = execute_optimization(data['provincesDemand'], data['termoelectricas'], data["blockDemand"])
     print(result)
     return jsonify(result)
 

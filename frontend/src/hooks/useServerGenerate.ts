@@ -15,13 +15,14 @@ interface IGenerateData {
     totalDemand: number
     totalGeneration: number
     totalDeficit: number
+    chartUrl: string
 }
 
 export function useServerGenerate(){
     const [isGenerating, setIsGenerating] = useState(false)
     const [dataGenerated, setDataGenerated] = useState<IGenerateData>()
 
-    const executeGenerate = (provincesDemand: IProvinceDemand[], termoelectricas: ITermoelectrica[]) => {
+    const executeGenerate = (provincesDemand: IProvinceDemand[], termoelectricas: ITermoelectrica[], blockDemand: number[]) => {
         setIsGenerating(true)
         fetch("http://localhost:5000/api/execute", {
             method: "POST",
@@ -30,13 +31,13 @@ export function useServerGenerate(){
             },
             body: JSON.stringify({
                 provincesDemand,
-                termoelectricas
+                termoelectricas,
+                blockDemand
             })
         })
         .then(response => response.json())
         .then(data => {
-            //setDataGenerated(data)
-            console.log(data)
+            setDataGenerated(data)
             setIsGenerating(false)
         })
 

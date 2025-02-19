@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as spo
 
-
+nameChart = 'optimization_result.png'
 
 provinceMapper = [
     "Pinar del Río",
@@ -34,7 +34,7 @@ termoelectricas = [
     {"nombre": "CTE Antonio Maceo", "ubicacion": "Renté, Santiago de Cuba", "capacidad": 380}
 ]
 
-def execute_optimization(provincesDemand, thermoelectricData):
+def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
     def error_cuadratico(asignado):
         error = 0
         for i in range(len(xdata)):
@@ -78,6 +78,7 @@ def execute_optimization(provincesDemand, thermoelectricData):
     # Plot the results
     plt.plot(xdata, asignadoResult.x, 'bo')
     plt.xticks(ticks=xdata, labels=provinceMapper, rotation=45, ha='right')
+    plt.savefig(f"static\\{nameChart}")
     plt.show()
 
     # Print the results
@@ -106,5 +107,6 @@ def execute_optimization(provincesDemand, thermoelectricData):
         "provinces": provinceDataResponse,
         "totalDemand": sum(demanda),
         "totalGeneration": generacionTotal,
-        "totalDeficit": totalDeficit
+        "totalDeficit": totalDeficit,
+        "chartUrl": nameChart
     }

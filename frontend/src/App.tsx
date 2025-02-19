@@ -1,11 +1,13 @@
 import CubaMapImg from "/src/assets/cuba-map.png"
 import ArtemisaImg from "/src/assets/artemisa.png"
 import ProvinceCard from "./components/ProvinceCard.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ITermoelectrica, IProvinceDemand} from "./interfaces/types.ts";
 import TorreImg from "/src/assets/tower.svg"
+import BloqueImg from "/src/assets/block.svg"
 import StarsImg from "/src/assets/stars.png"
 import {useServerGenerate} from "./hooks/useServerGenerate.ts";
+import MySpinner from "./components/MySpinner.tsx";
 
 const provinceDataInit: IProvinceDemand[] = [
     {
@@ -73,9 +75,11 @@ const provinceDataInit: IProvinceDemand[] = [
     },
 
 ]
+
 interface IProvinceImgMapper {
     [key: string]: string;
 }
+
 const provinceImgMapper: IProvinceImgMapper = {
     ["Pinar del Río"]: ArtemisaImg,
     ["Artemisa"]: ArtemisaImg,
@@ -99,26 +103,31 @@ function App() {
     const {executeGenerate, isGenerating, dataGenerated} = useServerGenerate()
     const updateDemand = (index: number, newDemand: number) => {
         const updatedProvinces = provincesData.map((province, i) =>
-            i === index ? { ...province, demand: newDemand } : province
+            i === index ? {...province, demand: newDemand} : province
         );
         setProvincesData(updatedProvinces);
     };
+    useEffect(() => {
+        console.log(dataGenerated)
+    }, [dataGenerated]);
     const [termoelectricas, setTermoelectricas] = useState<ITermoelectrica[]>([])
     const updateGeneration = (index: number, newGeneration: number) => {
         const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
-            i === index ? { ...termoelectrica, generationPerDay: newGeneration } : termoelectrica
+            i === index ? {...termoelectrica, generationPerDay: newGeneration} : termoelectrica
         );
         setTermoelectricas(updatedTermoelectricas);
     }
     const updateName = (index: number, newName: string) => {
         const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
-            i === index ? { ...termoelectrica, name: newName } : termoelectrica
+            i === index ? {...termoelectrica, name: newName} : termoelectrica
         );
         setTermoelectricas(updatedTermoelectricas);
     }
 
+    const [blockDemand, setBlockDemand] = useState<number[]>([0, 0, 0, 0])
+
     const generate = () => {
-        executeGenerate(provincesData, termoelectricas)
+        executeGenerate(provincesData, termoelectricas, blockDemand)
     }
     return (
         <div className={'h-dvh bg-slate-50 px-10 pb-30 overflow-y-scroll'}>
@@ -128,7 +137,7 @@ function App() {
                     <h1 className={'font-bold text-xl text-slate-800'}>Demanda</h1>
                     <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
                 </div>
-                <div className={'w-full grid lg:grid-cols-4 grid-cols-2 mt-5 gap-5'}>
+                <div className={'w-full grid lg:grid-cols-4 grid-cols-2 mt-10 gap-5'}>
                     {provincesData.map((item, index) => {
                         return (
                             <ProvinceCard
@@ -142,10 +151,10 @@ function App() {
                     })}
                 </div>
                 <div>
-                    <h1 className={'text-xl font-bold mt-10'}>Generación</h1>
+                    <h1 className={'text-xl font-bold mt-20'}>Generación</h1>
                     <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
                 </div>
-                <div className={'grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 mt-5 gap-5 w-full'}>
+                <div className={'grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 mt-10 gap-5 w-full'}>
                     {termoelectricas.map((item, index) => {
                         return (
                             <div className={'flex h-fit space-x-2 p-2 rounded-lg'}>
@@ -178,11 +187,30 @@ function App() {
                     })
                     }
                     <button
-                        className={'border-indigo-600 border-3 rounded-lg px-5 py-2 text-indigo-600 font-semibold hover:bg-indigo-100 hover:cursor-pointer'}
+                        className={'border-indigo-600 h-fit self-center border-3 rounded-lg px-5 py-3 text-indigo-600 font-semibold hover:bg-indigo-100 hover:cursor-pointer'}
                         onClick={() => setTermoelectricas([...termoelectricas, {name: '', generationPerDay: 0}])}
                     >
                         Nueva termoeléctrica
                     </button>
+                </div>
+
+                <div>
+                    <h1 className={'text-xl font-bold mt-20'}>Generación</h1>
+                    <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
+                </div>
+                <div className={'grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 mt-10 gap-5 w-full'}>
+                    {blockDemand.map((item, index) => {
+                        return (
+                            <ProvinceCard
+                                key={index}
+                                img={BloqueImg}
+                                name={`Bloque ${(index + 1).toString()}`}
+                                demand={item}
+                                setDemand={(newDemand) => setBlockDemand(blockDemand.map((block, i) => i === index ? newDemand : block))}
+                            />
+                        )
+                    })
+                    }
                 </div>
             </div>
             <div className={'mt-20 flex justify-center items-center'}>
@@ -192,14 +220,34 @@ function App() {
 
             </div>
             <div className={'mt-10'}>
-                <p className={'italic text-slate-600 font-thin mt-10'}>Aún no hay datos, presione el botón de generar</p>
+
+                {dataGenerated ? (
+                    <div>
+                        <img src={`http://localhost:5000/static/${dataGenerated.chartUrl}`} alt={'chart'}/>
+                    </div>
+                ) : (
+                    <p className={'italic text-slate-600 font-thin mt-10'}>Aún no hay datos, presione el botón de
+                        generar</p>
+                )
+
+                }
+
             </div>
+
             <button
                 className={'group p-4  bg-indigo-200 shadow-indigo-200 shadow-lg flex justify-center items-center rounded-xl fixed end-16 bottom-20 hover:cursor-pointer hover:bg-indigo-300 transition-all'}
                 onClick={generate}
             >
-                <img src={StarsImg} alt={'Generar'} className={'size-12'}/>
+                {isGenerating ?
+                    <MySpinner className={'size-12'}/>
+                    :
+                    <>
+                        <img src={StarsImg} alt={'Generar'} className={'size-12'}/>
+                    </>
+
+                }
                 <p className={'transition-all text-slate-800 font-bold text-lg overflow-clip group-hover:w-20 w-0'}>Generar</p>
+
 
             </button>
         </div>
