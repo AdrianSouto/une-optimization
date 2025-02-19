@@ -223,7 +223,9 @@ function App() {
 
                 {dataGenerated ? (
                     <div>
-                        <img src={`http://localhost:5000/static/${dataGenerated.chartUrl}`} alt={'chart'}/>
+                        <img src={`http://localhost:5000/static/optimization_result.png`} alt={'chart'}/>
+                        <img src={`http://localhost:5000/static/power-cut-hour.png`} alt={'hour'}/>
+
                     </div>
                 ) : (
                     <p className={'italic text-slate-600 font-thin mt-10'}>Aún no hay datos, presione el botón de

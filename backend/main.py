@@ -1,8 +1,9 @@
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize as spo
+import pulp
 
-nameChart = 'optimization_result.png'
 
 provinceMapper = [
     "Pinar del Río",
@@ -23,18 +24,35 @@ provinceMapper = [
 ]
 
 # Lista de termoeléctricas y sus capacidades
-termoelectricas = [
-    {"nombre": "CTE Máximo Gómez", "ubicacion": "Mariel, Artemisa", "capacidad": 370},
-    {"nombre": "CTE Otto Parellada", "ubicacion": "La Habana", "capacidad": 60},
-    {"nombre": "CTE Ernesto Guevara", "ubicacion": "Santa Cruz del Norte, Mayabeque", "capacidad": 295},
-    {"nombre": "CTE Antonio Guiteras", "ubicacion": "Matanzas", "capacidad": 317},
-    {"nombre": "CTE Carlos Manuel de Céspedes", "ubicacion": "Cienfuegos", "capacidad": 316},
-    {"nombre": "CTE Diez de Octubre", "ubicacion": "Nuevitas, Camagüey", "capacidad": 375},
-    {"nombre": "CTE Lidio Ramón Pérez", "ubicacion": "Felton, Holguín", "capacidad": 480},
-    {"nombre": "CTE Antonio Maceo", "ubicacion": "Renté, Santiago de Cuba", "capacidad": 380}
-]
+termoelectricas = []
+demanda = [300, 800, 200, 180, 400, 350, 150, 300, 150, 200, 450, 500, 250, 600, 250]
+demanda_bloques_habana = [200, 100, 170, 130]
+
 
 def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
+
+    for i in range(len(provincesDemand)):
+        provinceIndex = provinceMapper.index(provincesDemand[i]["name"])
+        demand = provincesDemand[i]["demand"]
+        if demand != 0:
+            demanda[provinceIndex] = demand
+
+    for i in range(len(blockDemand)):
+        if blockDemand[i] != 0:
+            demanda[i] = blockDemand[i]
+
+    for i in range(len(thermoelectricData)):
+        termoelectricas.append({
+            "nombre": thermoelectricData[i]["name"],
+            "capacidad": thermoelectricData[i]["generationPerDay"]
+        })
+
+
+    print("Demanda:", demanda)
+    print("Termoelectricas:", termoelectricas)
+    print("Bloques Habana:", demanda_bloques_habana)
+
+
     def error_cuadratico(asignado):
         error = 0
         for i in range(len(xdata)):
@@ -56,11 +74,9 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
             if asignado[i] < 0:
                 return -1
         return 1
-
     # Calcular la disponibilidad total de MW
     generacionTotal = sum([t["capacidad"] for t in termoelectricas])
 
-    demanda = [300, 800, 200, 180, 400, 350, 150, 300, 150, 200, 450, 500, 250, 600, 250]
 
     xdata = range(0, 15)
     plt.plot(xdata, demanda, 'ro')
@@ -75,10 +91,15 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
     # Perform the optimization with constraints
     asignadoResult = spo.minimize(error_cuadratico, [0]*15, constraints=cons)
 
+    # Calculate the deficit for each province
+    deficit = [demanda[i] - asignadoResult.x[i] for i in range(len(demanda))]
+
     # Plot the results
     plt.plot(xdata, asignadoResult.x, 'bo')
+    plt.plot(xdata, deficit, 'go')
     plt.xticks(ticks=xdata, labels=provinceMapper, rotation=45, ha='right')
-    plt.savefig(f"static\\{nameChart}")
+    plt.legend(['Demanda', 'Asignados', 'Deficit'])
+    plt.savefig(f"static\\optimization_result.png")
     plt.show()
 
     # Print the results
@@ -89,6 +110,7 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         deficit = demanda[i] - asignadoResult.x[i]
         consumoPerHourProvince = demanda[i] / 24
         timeToSatisfyAssigned = deficit / consumoPerHourProvince
+        deficit_percentage = (deficit / demanda[i]) * 100
         provinceDataResponse.append({
             "id": i,
             "name": provinceMapper[i],
@@ -97,16 +119,122 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
             "deficit": deficit,
             "powerCutHours": timeToSatisfyAssigned
         })
-        print(f"{provinceMapper[i]}: Demanda: {(demanda[i])} , Asignados: {asignadoResult.x[i]}, Deficit: {deficit} , Horas Apagon: {timeToSatisfyAssigned}")
+        print(f"{provinceMapper[i]}: Demanda: {demanda[i]}, Asignados: {asignadoResult.x[i]}, Deficit: {deficit}, Porcentaje Deficit: {deficit_percentage:.2f}%, Horas Apagon: {timeToSatisfyAssigned}")
 
-    print(f"total Asignado: {sum(asignadoResult.x)}")
-    print(f"total generado: {generacionTotal}")
-    print("Demanda Total:",sum(demanda))
+    print(f"Total Asignado: {sum(asignadoResult.x)}")
+    print(f"Total generado: {generacionTotal}")
+    sumD = sum(demanda)
+    print("Demanda Total:", sum(demanda))
     print(f"Deficit Total: {totalDeficit}")
+
+    ##################################################################################################################################################################
+
+    # Datos de entrada
+
+    demanda_habana = 800
+
+
+    asignados_habana = 700
+
+
+    # Calcular proporciones y asignación por bloque
+    proporciones_habana = [d / demanda_habana for d in demanda_bloques_habana]
+    asignados_bloques_habana = [asignados_habana * p for p in proporciones_habana]
+
+    # Calcular consumo promedio por hora
+    consumo_promedio_bloques = [d / 24 for d in demanda_bloques_habana]
+
+    # Calcular tiempo con fluido eléctrico por bloque
+    tiempo_con_fluido = [
+        (asignados_bloques_habana[i] / consumo_promedio_bloques[i])
+        for i in range(len(demanda_bloques_habana))
+    ]
+
+    # Número de bloques y horas
+    num_bloques = len(demanda_bloques_habana)
+    horas = 24
+
+    # Crear el problema de optimización
+    problema = pulp.LpProblem("Distribucion_Fluido_Electrico", pulp.LpMinimize)
+
+    # Variables de decisión
+    x = pulp.LpVariable.dicts("Encendido", ((i, t) for i in range(num_bloques) for t in range(horas)), cat="Binary")
+    d = pulp.LpVariable.dicts("Diferencia", ((i, t) for i in range(num_bloques) for t in range(1, horas)), lowBound=0)
+
+    # Función objetivo: Minimizar la cantidad de cambios en el estado (de encendido a apagado y viceversa)
+    problema += pulp.lpSum(d[i, t] for i in range(num_bloques) for t in range(1, horas))
+
+    # Restricciones
+    for i in range(num_bloques):
+        # Cada bloque debe cumplir con su tiempo de fluido eléctrico
+        problema += pulp.lpSum(x[i, t] for t in range(horas)) == tiempo_con_fluido[i]
+
+        for t in range(1, horas):
+            problema += d[i, t] >= x[i, t] - x[i, t - 1]
+            problema += d[i, t] >= x[i, t - 1] - x[i, t]
+
+    for t in range(horas):
+        for i in range(num_bloques - 1):
+            # No permitir que dos bloques contiguos estén apagados al mismo tiempo
+            problema += x[i, t] + x[i + 1, t] >= 1
+
+    # Resolver el problema
+    problema.solve()
+
+    # Mostrar resultados
+    print("Estado:", pulp.LpStatus[problema.status])
+    print("Cantidad mínima de cambios en el estado:", pulp.value(problema.objective))
+
+    resultados = np.zeros((num_bloques, horas))
+    for i in range(num_bloques):
+        for t in range(horas):
+            resultados[i, t] = pulp.value(x[i, t])
+
+    # Imprimir los intervalos de apagado y encendido para cada bloque
+    for i in range(num_bloques):
+        print(f"Bloque {i + 1}:")
+        encendido = False
+        inicio_intervalo = 0
+
+        for t in range(horas):
+            if resultados[i, t] == 1 and not encendido:
+                encendido = True
+                inicio_intervalo = t
+            elif resultados[i, t] == 0 and encendido:
+                encendido = False
+                print(f"  Encendido desde hora {inicio_intervalo} hasta hora {t - 1}")
+
+        if encendido:
+            print(f"  Encendido desde hora {inicio_intervalo} hasta hora {horas - 1}")
+
+    # Verificar la energía consumida para cada bloque
+    for i in range(num_bloques):
+        horas_encendido = np.sum(resultados[i, :])
+        energia_consumida = horas_encendido * consumo_promedio_bloques[i]
+        print(f"Bloque {i + 1}:")
+        print(f"  Consumo Promedio Bloques: {consumo_promedio_bloques[i]}")
+        print(f"  Horas encendido: {horas_encendido}")
+        print(f"  Energía consumida: {energia_consumida} MW")
+        print(f"  Energía asignada: {asignados_bloques_habana[i]} MW")
+
+    # Graficar los resultados
+    plt.figure(figsize=(12, 8))
+
+    for i in range(num_bloques):
+        plt.plot(range(horas), resultados[i, :], label=f'Bloque {i + 1}')
+
+    plt.xlabel('Hora')
+    plt.ylabel('Estado (1: Encendido, 0: Apagado)')
+    plt.title('Distribución del fluido eléctrico por hora')
+    plt.legend()
+    plt.grid()
+    plt.savefig(f"static\\power-cut-hour.png")
+    plt.show()
+
     return {
         "provinces": provinceDataResponse,
         "totalDemand": sum(demanda),
         "totalGeneration": generacionTotal,
         "totalDeficit": totalDeficit,
-        "chartUrl": nameChart
+        "chartUrl": "optimization_result.png"
     }
