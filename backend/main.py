@@ -190,44 +190,7 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         for t in range(horas):
             resultados[i, t] = pulp.value(x[i, t])
 
-    # Create a list to store the intervals for each block
-    block_intervals = []
 
-    # Iterate through the blocks and their respective hours to determine the intervals of being turned on
-    for i in range(num_bloques):
-        intervals = []
-        encendido = False
-        inicio_intervalo = 0
-
-        for t in range(horas):
-            if resultados[i, t] == 1 and not encendido:
-                encendido = True
-                inicio_intervalo = t
-            elif resultados[i, t] == 0 and encendido:
-                encendido = False
-                intervals.append((inicio_intervalo, t - 1))
-
-        if encendido:
-            intervals.append((inicio_intervalo, horas - 1))
-
-        block_intervals.append({
-            "block": i + 1,
-            "intervals": intervals
-        })
-    # Verificar la energía consumida para cada bloque
-    block_energy_details = []
-
-    # Iterate through the blocks to calculate the hours turned on and energy consumed
-    for i in range(num_bloques):
-        horas_encendido = np.sum(resultados[i, :])
-        energia_consumida = horas_encendido * consumo_promedio_bloques[i]
-        block_energy_details.append({
-            "block": i + 1,
-            "consumoPromedioBloques": consumo_promedio_bloques[i],
-            "horasEncendido": horas_encendido,
-            "energiaConsumida": energia_consumida,
-            "energiaAsignada": asignados_bloques_habana[i]
-        })
 
     # Graficar los resultados
     plt.figure(figsize=(12, 8))
@@ -243,6 +206,38 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
     plt.savefig(f"static\\power-cut-hour.png")
     plt.show()
 
+    # Verificar la energía consumida y los intervalos para cada bloque
+    block_energy_details = []
+
+    # Iterate through the blocks to calculate the hours turned on, energy consumed, and intervals
+    for i in range(num_bloques):
+        horas_encendido = np.sum(resultados[i, :])
+        energia_consumida = horas_encendido * consumo_promedio_bloques[i]
+
+        # Determine the intervals of being turned on
+        intervals = []
+        encendido = False
+        inicio_intervalo = 0
+
+        for t in range(horas):
+            if resultados[i, t] == 1 and not encendido:
+                encendido = True
+                inicio_intervalo = t
+            elif resultados[i, t] == 0 and encendido:
+                encendido = False
+                intervals.append((inicio_intervalo, t - 1))
+
+        if encendido:
+            intervals.append((inicio_intervalo, horas - 1))
+
+        block_energy_details.append({
+            "block": i + 1,
+            "consumoPromedioBloques": consumo_promedio_bloques[i],
+            "horasEncendido": horas_encendido,
+            "energiaConsumida": energia_consumida,
+            "energiaAsignada": asignados_bloques_habana[i],
+            "intervals": intervals
+        })
 
 
     # Return the updated dictionary
@@ -252,6 +247,5 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         "totalGeneration": generacionTotal,
         "totalDeficit": totalDeficit,
         "chartUrl": "optimization_result.png",
-        "blockIntervals": block_intervals,
-        "blockEnergyDetails": block_energy_details
+        "blockEnergyDetails": block_energy_details,
     }
