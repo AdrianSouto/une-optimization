@@ -6,8 +6,10 @@ import {ITermoelectrica, IProvinceDemand} from "./interfaces/types.ts";
 import TorreImg from "/src/assets/tower.svg"
 import BloqueImg from "/src/assets/block.svg"
 import StarsImg from "/src/assets/stars.png"
+import RemoveImg from "/src/assets/remove.svg"
 import {useServerGenerate} from "./hooks/useServerGenerate.ts";
 import MySpinner from "./components/MySpinner.tsx";
+import ShowServerData from "./components/ShowServerData.tsx";
 
 const provinceDataInit: IProvinceDemand[] = [
     {
@@ -162,13 +164,25 @@ function App() {
                                     <img src={TorreImg} alt={'Artemisa'} className={'h-full w-10'}/>
                                 </div>
                                 <div className={'flex-col flex h-full pe-2 space-y-2'}>
-                                    <input
-                                        className={'font-semibold text-slate-800 mt-1 h-full w-18 bg-slate-100 rounded-md p-1 w-full hover:ring-0 hover:ring-transparent'}
-                                        placeholder={'Nombre'}
-                                        type={"text"}
-                                        value={item.name}
-                                        onChange={(e) => updateName(index, e.target.value)}
-                                    />
+                                    <div className={'flex items-center space-x-1'}>
+                                        <input
+                                            className={'font-semibold text-slate-800 mt-1 h-full w-18 bg-slate-100 rounded-md p-1 w-full hover:ring-0 hover:ring-transparent'}
+                                            placeholder={'Nombre'}
+                                            type={"text"}
+                                            value={item.name}
+                                            onChange={(e) => updateName(index, e.target.value)}
+                                        />
+                                        <button
+                                            className={' bg-red-200 hover:bg-red-400 transition-colors w-4 h-4 rounded-full flex justify-center items-center hover:cursor-pointer'}
+                                            onClick={(e) => {
+                                                setTermoelectricas(termoelectricas.filter((_, i) => i !== index))
+                                                e.preventDefault()
+                                            }}
+                                        >
+                                            <img src={RemoveImg} alt={'Eliminar'}/>
+                                        </button>
+                                    </div>
+
                                     <div className={'flex items-center space-x-2'}>
                                         <p className={'text-sm text-slate-600 font-semibold'}>Demanda Promedio: </p>
                                         <input
@@ -223,8 +237,10 @@ function App() {
 
                 {dataGenerated ? (
                     <div>
-                        <img src={`http://localhost:5000/static/optimization_result.png`} alt={'chart'}/>
-                        <img src={`http://localhost:5000/static/power-cut-hour.png`} alt={'hour'}/>
+
+                        <ShowServerData data={dataGenerated}/>
+
+
 
                     </div>
                 ) : (
