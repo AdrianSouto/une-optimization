@@ -31,6 +31,26 @@ export default function ShowServerData({data}: {data: IServerDataResponse}){
                     ))}
                 </div>
             </div>
+            <div className={'flex flex-col space-y-4 mt-10'}>
+                <div className={'w-fit'}>
+                    <h1 className={'text-xl font-bold'}>Bloques de La Habana</h1>
+                    <div className={'h-1 w-full rounded-full bg-amber-700'}/>
+                </div>
+                <div className={'grid grid-cols-3 gap-x-4 gap-y-10'}>
+                    {data.blockEnergyDetails.map((block, index) => (
+                        <div key={index}
+                             className={'flex flex-col space-y-2 p-5 border-2 bg-amber-50 border-amber-600 rounded-md'}>
+                            <h3 className={'text-lg font-bold text-slate-800'}>Bloque {block.block}</h3>
+                            <div className={'flex flex-col space-y-2'}>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Consumo Promedio: {block.consumoPromedioBloques} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Energía Asignada: {block.energiaAsignada} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Energía Consumida: {block.energiaConsumida} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Horas de Encendido: {block.horasEncendido} h</h4>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
             <div className={'flex flex-col justify-center items-center mt-16'}>
                 <div>
                     <h1 className={'text-xl font-bold'}>Gráficos</h1>

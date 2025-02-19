@@ -184,7 +184,7 @@ function App() {
                                     </div>
 
                                     <div className={'flex items-center space-x-2'}>
-                                        <p className={'text-sm text-slate-600 font-semibold'}>Demanda Promedio: </p>
+                                        <p className={'text-sm text-slate-600 font-semibold'}>Generación Promedio: </p>
                                         <input
                                             className={'h-full w-18 bg-slate-100 rounded-md p-1'}
                                             placeholder={'0'}
@@ -209,7 +209,7 @@ function App() {
                 </div>
 
                 <div>
-                    <h1 className={'text-xl font-bold mt-20'}>Generación</h1>
+                    <h1 className={'text-xl font-bold mt-20'}>Bloques de La Habana</h1>
                     <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
                 </div>
                 <div className={'grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 mt-10 gap-5 w-full'}>

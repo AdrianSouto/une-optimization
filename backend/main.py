@@ -210,10 +210,7 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         if encendido:
             intervals.append((inicio_intervalo, horas - 1))
 
-        block_intervals.append({
-            "block": i + 1,
-            "intervals": intervals
-        })
+        block_intervals.append(intervals)
     # Verificar la energía consumida para cada bloque
     block_energy_details = []
 
@@ -226,7 +223,8 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
             "consumoPromedioBloques": consumo_promedio_bloques[i],
             "horasEncendido": horas_encendido,
             "energiaConsumida": energia_consumida,
-            "energiaAsignada": asignados_bloques_habana[i]
+            "energiaAsignada": asignados_bloques_habana[i],
+            "intervals": block_intervals[i]
         })
 
     # Graficar los resultados

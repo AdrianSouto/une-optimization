@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="494bc176-bbd9-44ec-bb99-8d763a6c44d3" name="Changes" comment="new herrera changes">
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/remove.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/ShowServerData.tsx" afterDir="false" />
+    <list default="true" id="494bc176-bbd9-44ec-bb99-8d763a6c44d3" name="Changes" comment="new show data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useServerGenerate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useServerGenerate.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/interfaces/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/interfaces/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -76,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1739942353580</updated>
-      <workItem from="1739942355384" duration="3679000" />
+      <workItem from="1739942355384" duration="4806000" />
     </task>
     <task id="LOCAL-00001" summary="web init commit">
       <option name="closed" value="true" />
@@ -102,17 +98,49 @@
       <option name="project" value="LOCAL" />
       <updated>1739948394632</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="new show data">
+      <option name="closed" value="true" />
+      <created>1739950296763</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1739950296763</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="web" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="web init commit" />
     <MESSAGE value="new blocks&#10;new loading animation frontend" />
     <MESSAGE value="new herrera changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="new herrera changes" />
+    <MESSAGE value="new show data" />
+    <option name="LAST_COMMIT_MESSAGE" value="new show data" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/une_optimization$main1.coverage" NAME="main1 Coverage Results" MODIFIED="1739947967031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Documents" />
