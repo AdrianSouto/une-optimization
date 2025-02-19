@@ -215,14 +215,19 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
             "intervals": intervals
         })
     # Verificar la energía consumida para cada bloque
+    block_energy_details = []
+
+    # Iterate through the blocks to calculate the hours turned on and energy consumed
     for i in range(num_bloques):
         horas_encendido = np.sum(resultados[i, :])
         energia_consumida = horas_encendido * consumo_promedio_bloques[i]
-        print(f"Bloque {i + 1}:")
-        print(f"  Consumo Promedio Bloques: {consumo_promedio_bloques[i]}")
-        print(f"  Horas encendido: {horas_encendido}")
-        print(f"  Energía consumida: {energia_consumida} MW")
-        print(f"  Energía asignada: {asignados_bloques_habana[i]} MW")
+        block_energy_details.append({
+            "block": i + 1,
+            "consumoPromedioBloques": consumo_promedio_bloques[i],
+            "horasEncendido": horas_encendido,
+            "energiaConsumida": energia_consumida,
+            "energiaAsignada": asignados_bloques_habana[i]
+        })
 
     # Graficar los resultados
     plt.figure(figsize=(12, 8))
@@ -247,5 +252,6 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         "totalGeneration": generacionTotal,
         "totalDeficit": totalDeficit,
         "chartUrl": "optimization_result.png",
-        "blockIntervals": block_intervals
+        "blockIntervals": block_intervals,
+        "blockEnergyDetails": block_energy_details
     }
