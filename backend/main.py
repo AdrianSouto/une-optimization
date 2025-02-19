@@ -250,6 +250,5 @@ def execute_optimization(provincesDemand, thermoelectricData, blockDemand):
         "totalGeneration": generacionTotal,
         "totalDeficit": totalDeficit,
         "chartUrl": "optimization_result.png",
-        "blockIntervals": block_intervals,
         "blockEnergyDetails": block_energy_details
     }
