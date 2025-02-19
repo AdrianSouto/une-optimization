@@ -10,6 +10,21 @@ import RemoveImg from "/src/assets/remove.svg"
 import {useServerGenerate} from "./hooks/useServerGenerate.ts";
 import MySpinner from "./components/MySpinner.tsx";
 import ShowServerData from "./components/ShowServerData.tsx";
+import PinarImg from "/src/assets/pinar.png"
+import HabanaImg from "/src/assets/habana.png"
+import MayabequeImg from "/src/assets/mayabeque.png"
+import MatanzasImg from "/src/assets/matanzas.png"
+import CienfuegosImg from "/src/assets/cienfuegos.png"
+import VillaClaraImg from "/src/assets/villa-clara.png"
+import SanctiSpiritusImg from "/src/assets/sancti-spiritus.png"
+import CiegoAvilaImg from "/src/assets/ciego-de-avila.png"
+import CamagueyImg from "/src/assets/camaguey.png"
+import LasTunasImg from "/src/assets/las-tunas.png"
+import HolguinImg from "/src/assets/holguin.png"
+import GranmaImg from "/src/assets/granma.png"
+import SantiagoImg from "/src/assets/santiago.png"
+import GuantanamoImg from "/src/assets/guantanamo.png"
+import PresentationImg from "/src/assets/presentation.png"
 
 const provinceDataInit: IProvinceDemand[] = [
     {
@@ -83,21 +98,21 @@ interface IProvinceImgMapper {
 }
 
 const provinceImgMapper: IProvinceImgMapper = {
-    ["Pinar del Río"]: ArtemisaImg,
+    ["Pinar del Río"]: PinarImg,
     ["Artemisa"]: ArtemisaImg,
-    ["La Habana"]: ArtemisaImg,
-    ["Mayabeque"]: ArtemisaImg,
-    ["Matanzas"]: ArtemisaImg,
-    ["Cienfuegos"]: ArtemisaImg,
-    ["Villa Clara"]: ArtemisaImg,
-    ["Sancti Spíritus"]: ArtemisaImg,
-    ["Ciego de Ávila"]: ArtemisaImg,
-    ["Camagüey"]: ArtemisaImg,
-    ["Las Tunas"]: ArtemisaImg,
-    ["Holguín"]: ArtemisaImg,
-    ["Granma"]: ArtemisaImg,
-    ["Santiago de Cuba"]: ArtemisaImg,
-    ["Guantánamo"]: ArtemisaImg,
+    ["La Habana"]: HabanaImg,
+    ["Mayabeque"]: MayabequeImg,
+    ["Matanzas"]: MatanzasImg,
+    ["Cienfuegos"]: CienfuegosImg,
+    ["Villa Clara"]: VillaClaraImg,
+    ["Sancti Spíritus"]: SanctiSpiritusImg,
+    ["Ciego de Ávila"]: CiegoAvilaImg,
+    ["Camagüey"]: CamagueyImg,
+    ["Las Tunas"]: LasTunasImg,
+    ["Holguín"]: HolguinImg,
+    ["Granma"]: GranmaImg,
+    ["Santiago de Cuba"]: SantiagoImg,
+    ["Guantánamo"]: GuantanamoImg,
 }
 
 function App() {
@@ -130,11 +145,22 @@ function App() {
 
     const generate = () => {
         executeGenerate(provincesData, termoelectricas, blockDemand)
+        document.getElementById("model")?.scrollIntoView({ behavior: "smooth" });
+
     }
     return (
-        <div className={'h-dvh bg-slate-50 px-10 pb-30 overflow-y-scroll'}>
-            <div className={'flex flex-col items-center'}>
-                <img className={'w-1/3'} src={CubaMapImg} alt={'Cuba'}/>
+        <div className={'h-dvh bg-slate-50 pb-30 overflow-y-scroll  px-10'}>
+            <div className={'h-[90dvh] justify-around items-center w-full flex'}>
+                <div className={'flex flex-col items-center justify-around'}>
+                    <h1 className={'font-extrabold text-5xl text-indigo-500 text-pretty w-2/3 leading-normal'}>Optimización
+                        del flujo eléctrico Nacional</h1>
+                    <img src={CubaMapImg} alt={'cuba'} className={'w-1/2'}/>
+                </div>
+                <img src={PresentationImg} className={'hue-rotate-30'}/>
+            </div>
+            <div className={'flex flex-col items-center '}>
+
+
                 <div>
                     <h1 className={'font-bold text-xl text-slate-800'}>Demanda</h1>
                     <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
@@ -233,13 +259,12 @@ function App() {
                 <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
 
             </div>
-            <div className={'mt-10'}>
+            <div id={"model"} className={'mt-10'}>
 
                 {dataGenerated ? (
                     <div>
 
                         <ShowServerData data={dataGenerated}/>
-
 
 
                     </div>

@@ -8,7 +8,7 @@ interface Props{
 export default function ProvinceCard({img, name, demand, setDemand}: Props){
     return (
         <div className={'flex h-fit space-x-2 p-2 rounded-lg'}>
-            <img src={img} alt={'Artemisa'} className={'size-fit'}/>
+            <img src={img} alt={'Artemisa'} className={'w-20'}/>
             <div className={'flex-col flex h-full pe-2'}>
                 <h2 className={'font-bold text-slate-800 mt-1'}>{name}</h2>
                 <div className={'flex items-center space-x-2'}>
