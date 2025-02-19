@@ -1,26 +1,10 @@
 import {useState} from "react";
-import {IProvinceDemand, ITermoelectrica} from "../interfaces/types.ts";
+import {IProvinceDemand, IServerDataResponse, ITermoelectrica} from "../interfaces/types.ts";
 
-interface IProvinceResponse {
-    id: number
-    name: string
-    demand: number
-    assigned: number
-    deficit: number
-    powerCutHours: number
-}
-
-interface IGenerateData {
-    provinces: IProvinceResponse[]
-    totalDemand: number
-    totalGeneration: number
-    totalDeficit: number
-    chartUrl: string
-}
 
 export function useServerGenerate(){
     const [isGenerating, setIsGenerating] = useState(false)
-    const [dataGenerated, setDataGenerated] = useState<IGenerateData>()
+    const [dataGenerated, setDataGenerated] = useState<IServerDataResponse>()
 
     const executeGenerate = (provincesDemand: IProvinceDemand[], termoelectricas: ITermoelectrica[], blockDemand: number[]) => {
         setIsGenerating(true)
