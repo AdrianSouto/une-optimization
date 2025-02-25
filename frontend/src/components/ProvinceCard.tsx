@@ -6,6 +6,7 @@ interface Props{
 }
 
 export default function ProvinceCard({img, name, demand, setDemand}: Props){
+    console.log(demand)
     return (
         <div className={'flex h-fit space-x-2 p-2 rounded-lg'}>
             <img src={img} alt={'Artemisa'} className={'w-20'}/>

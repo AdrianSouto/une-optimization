@@ -21,6 +21,7 @@ export interface IBlockEnergyDetailsResponse{
     energiaAsignada: number
     energiaConsumida: number
     horasEncendido: number
+    intervals: [[number, number]]
 }
 
 
@@ -30,5 +31,4 @@ export interface IServerDataResponse {
     totalGeneration: number
     totalDeficit: number
     blockEnergyDetails: IBlockEnergyDetailsResponse[]
-    intervals: [[number, number]]
 }
