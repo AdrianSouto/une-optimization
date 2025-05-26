@@ -155,10 +155,7 @@ def plot_power_cuts(schedule):
 
 
 # Ejemplo de uso
-if __name__ == "__main__":
-    powerCutHours = 3  # 3 horas de corte por día
-    num_blocks = 4  # 4 bloques (zonas)
-
+def schedule(powerCutHours, num_blocks):
     optimized_schedule = optimize_power_cuts(powerCutHours, num_blocks)
 
     # Imprimir resultados
@@ -170,3 +167,4 @@ if __name__ == "__main__":
 
     # Mostrar gráfico
     plot_power_cuts(optimized_schedule)
+    return optimized_schedule
