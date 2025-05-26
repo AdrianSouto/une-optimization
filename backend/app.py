@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from main import execute_optimization
+from schedule import optimize_power_cuts
 
 app = Flask(__name__)
 CORS(app)
@@ -14,5 +15,19 @@ def execute_script():
     return jsonify(result)
 
 
+@app.route('/api/schedule', methods=['POST'])
+def schedule_optimization():
+    data = request.json
+    province_demand = data.get('provinceDemand', {})
+    blocks_quantity = data.get('blocksQuantity', 0)
+
+    # Extraer powerCutHours del diccionario province_demand
+    power_cut_hours = province_demand.get('powerCutHours', 0)
+
+    # Llamar a generate_power_cut_schedule con el valor correcto
+    result = optimize_power_cuts(power_cut_hours, blocks_quantity)
+    return jsonify(result)
+
 if __name__ == '__main__':
     app.run()
+

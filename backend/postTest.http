@@ -2,8 +2,22 @@
 POST http://127.0.0.1:5000/api/execute
 Content-Type: application/json
 
+{"provincesDemand":[{"name":"Pinar del Río","demand":0},{"name":"Artemisa","demand":0},{"name":"La Habana","demand":0},{"name":"Mayabeque","demand":0},{"name":"Matanzas","demand":0},{"name":"Cienfuegos","demand":0},{"name":"Villa Clara","demand":0},{"name":"Sancti Spíritus","demand":0},{"name":"Ciego de Ávila","demand":0},{"name":"Camagüey","demand":0},{"name":"Las Tunas","demand":0},{"name":"Holguín","demand":0},{"name":"Granma","demand":0},{"name":"Santiago de Cuba","demand":0},{"name":"Guantánamo","demand":0}],"termoelectricas":[{"name":"CTE Máximo Gómez","generationPerDay":370},{"name":"CTE Otto Parellada","generationPerDay":60},{"name":"CTE Ernesto Guevara","generationPerDay":295},{"name":"CTE Antonio Guiteras","generationPerDay":317},{"name":"CTE Carlos Manuel de Céspedes","generationPerDay":316},{"name":"CTE Diez de Octubre","generationPerDay":375},{"name":"CTE Lidio Ramón Pérez","generationPerDay":480},{"name":"CTE Antonio Maceo","generationPerDay":380}],"blockDemand":[0,0,0,0]}
+###
+
+### GET request to example server
+POST http://127.0.0.1:5000/api/schedule
+Content-Type: application/json
+
 {
-    "name": "John",
-    "age": 30
+  "provinceDemand": {
+    "assigned": 128.48049564436928,
+    "deficit": 171.51950435563072,
+    "demand": 300,
+    "id": 0,
+    "name": "Pinar del Rio",
+    "powerCutHours": 13.721560348450458
+  },
+  "blocksQuantity": 4
 }
 ###
