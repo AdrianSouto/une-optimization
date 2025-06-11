@@ -1,9 +1,12 @@
+import os
+from datetime import time
+
 import numpy as np
 from scipy.optimize import minimize
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-
+count = 1
 def optimize_power_cuts(powerCutHours, num_blocks):
     """
     Optimiza la distribución de cortes de energía por bloque.
@@ -117,14 +120,22 @@ def optimize_power_cuts(powerCutHours, num_blocks):
 
 
 def plot_power_cuts(schedule):
+    global count
     """
-    Muestra un gráfico de los rangos de cortes por bloque.
+    Muestra un gráfico de los rangos de cortes por bloque, colocándolos uno al lado del otro.
 
     Args:
         schedule (list): Lista de diccionarios con {blockNumber, schedule}.
     """
     fig, ax = plt.subplots(figsize=(12, 8))
     day_names = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+
+    # Determinar el número total de bloques
+    num_blocks = len(schedule)
+    block_width = 1.0 / num_blocks  # Ancho de cada bloque dentro de un día
+
+    # Evitar duplicados en la leyenda
+    used_labels = set()
 
     for block in schedule:
         block_num = block['blockNumber']
@@ -133,16 +144,25 @@ def plot_power_cuts(schedule):
             start = day_schedule['startCut']
             end = day_schedule['endCut']
 
+            # Calcular posición x ajustada para que no se superpongan
+            x_pos = day + (block_num - 1) * block_width
+
+            # Crear etiqueta solo si no se ha usado antes
+            label = None
+            if block_num not in used_labels:
+                label = f'Bloque {block_num}'
+                used_labels.add(block_num)
+
             ax.add_patch(Rectangle(
-                (day, start), 1, end - start,
+                (x_pos, start), block_width, end - start,
                 edgecolor='black', linewidth=1,
-                facecolor=f'C{block_num - 1}', alpha=0.6,
-                label=f'Bloque {block_num}' if day == 0 else None
+                facecolor=f'C{block_num - 1}', alpha=0.8,
+                label=label
             ))
 
     ax.set_xlim(0, 7)
     ax.set_ylim(0, 24)
-    ax.set_xticks(np.arange(7) + 0.5)
+    ax.set_xticks(np.arange(7) + 0.5)  # Centrar las etiquetas
     ax.set_xticklabels(day_names)
     ax.set_yticks(np.arange(24))
     ax.set_ylabel('Hora del día')
@@ -150,9 +170,19 @@ def plot_power_cuts(schedule):
     ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     ax.grid(True, linestyle='--', alpha=0.5)
 
+    # Crear la carpeta static si no existe
     plt.tight_layout()
+    os.makedirs("static", exist_ok=True)
+    file_name = f"power_cuts_schedule{count}.png"
+    count += 1
+    # Guardar el gráfico
+    file_path = os.path.join("static", file_name)
+    plt.savefig(file_path)
     plt.show()
-
+    # Esperar hasta que el archivo exista
+    while not os.path.exists(file_path):
+        time.sleep(0.1)
+    return file_name
 
 # Ejemplo de uso
 def schedule(powerCutHours, num_blocks):
@@ -165,6 +195,13 @@ def schedule(powerCutHours, num_blocks):
             day_name = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][day['dayOfWeek']]
             print(f"{day_name}: {day['startCut']}:00 - {day['endCut']}:00")
 
-    # Mostrar gráfico
-    plot_power_cuts(optimized_schedule)
-    return optimized_schedule
+    # Mostrar y guardar gráfico
+    chart_filename = plot_power_cuts(optimized_schedule)
+
+    # Agregar la URL del gráfico a la respuesta
+    response = {
+        "schedule": optimized_schedule,
+        "chartUrl": chart_filename.replace("static/", "")  # Solo el nombre del archivo para la URL
+    }
+
+    return response

@@ -1,10 +1,9 @@
 import CubaMapImg from "/src/assets/cuba-map.png"
 import ArtemisaImg from "/src/assets/artemisa.png"
 import ProvinceCard from "./components/ProvinceCard.tsx";
-import {useCallback, useEffect, useState} from "react";
+import {useState} from "react";
 import {ITermoelectrica, IProvinceDemand} from "./interfaces/types.ts";
 import TorreImg from "/src/assets/tower.svg"
-import BloqueImg from "/src/assets/block.svg"
 import StarsImg from "/src/assets/stars.png"
 import RemoveImg from "/src/assets/remove.svg"
 import {useServerGenerate} from "./hooks/useServerGenerate.ts";
@@ -25,7 +24,9 @@ import GranmaImg from "/src/assets/granma.png"
 import SantiagoImg from "/src/assets/santiago.png"
 import GuantanamoImg from "/src/assets/guantanamo.png"
 import PresentationImg from "/src/assets/presentation.png"
-import {data} from "autoprefixer";
+import ProvinceSelectItem from "./components/ProvinceSelectItem.tsx";
+import {useServerScheduler} from "./hooks/useServerScheduler.ts";
+import { Schedule } from "./components/Schedule.tsx";
 
 
 const termoelectricasInit: ITermoelectrica[] = [
@@ -138,28 +139,39 @@ function App() {
         );
         setProvincesData(updatedProvinces);
     };
+    const {schedule, isScheduling, generateScheduler} = useServerScheduler()
 
-const [termoelectricas, setTermoelectricas] = useState<ITermoelectrica[]>(termoelectricasInit)
-const updateGeneration = (index: number, newGeneration: number) => {
-    const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
-        i === index ? {...termoelectrica, generationPerDay: newGeneration} : termoelectrica
-    );
-    setTermoelectricas(updatedTermoelectricas);
-}
-const updateName = (index: number, newName: string) => {
-    const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
-        i === index ? {...termoelectrica, name: newName} : termoelectrica
-    );
-    setTermoelectricas(updatedTermoelectricas);
-}
+    const [termoelectricas, setTermoelectricas] = useState<ITermoelectrica[]>(termoelectricasInit)
+    const updateGeneration = (index: number, newGeneration: number) => {
+        const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
+            i === index ? {...termoelectrica, generationPerDay: newGeneration} : termoelectrica
+        );
+        setTermoelectricas(updatedTermoelectricas);
+    }
+    const updateName = (index: number, newName: string) => {
+        const updatedTermoelectricas = termoelectricas.map((termoelectrica, i) =>
+            i === index ? {...termoelectrica, name: newName} : termoelectrica
+        );
+        setTermoelectricas(updatedTermoelectricas);
+    }
+        const [scheduleProvinceSelected, setScheduleProvinceSelected] = useState(provincesData.find(item => item.name === "La Habana")!)
+        const [blockQuantity, setBlockQuantity] = useState(0)
 
-const [blockDemand, setBlockDemand] = useState<number[]>([0, 0, 0, 0])
+    const generate = () => {
+        executeGenerate(provincesData, termoelectricas, [0,0,0,0])
+        document.getElementById("model")?.scrollIntoView({behavior: "smooth"});
+    }
+    const [scheduleError, setScheduleError] = useState(false)
+    const generateSchedule = () => {
+        if (blockQuantity <= 0) {
+            setScheduleError(true)
+            return;
+        }
+        const selectedProvince = dataGenerated?.provinces.find(item => scheduleProvinceSelected.name === item.name) ?? scheduleProvinceSelected;
 
-const generate = () => {
-    executeGenerate(provincesData, termoelectricas, blockDemand)
-    document.getElementById("model")?.scrollIntoView({behavior: "smooth"});
+        generateScheduler(selectedProvince, blockQuantity)
 
-}
+    }
 return (
     <div className={'h-dvh bg-slate-50 pb-30 overflow-y-scroll  px-10'}>
         <div className={'h-[90dvh] justify-around items-center w-full flex'}>
@@ -269,6 +281,56 @@ return (
             }
 
         </div>
+        {dataGenerated &&
+            <>
+
+                <div className={'mt-20 flex justify-center items-center'}>
+                    <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
+                    <h1 className={'text-xl font-bold mx-5 text-slate-900 text-center'}>Planificación</h1>
+                    <div className={'h-1 w-full rounded-full bg-indigo-700'}/>
+                </div>
+                <div className={'w-full grid lg:grid-cols-4 grid-cols-2 mt-10 gap-5'}>
+                    {provincesData.map((item, index) => {
+                        return (
+                            <ProvinceSelectItem
+                                key={index}
+                                img={provinceImgMapper[item.name]}
+                                name={item.name}
+                                selected={item.name === scheduleProvinceSelected.name}
+                                setBlockQuantity={setBlockQuantity}
+                                onClick={() => setScheduleProvinceSelected(item)}
+                                error={scheduleError && item.name === scheduleProvinceSelected.name}
+                                setError={setScheduleError}
+                                setSelected={() => {setScheduleProvinceSelected(item)}}
+                            />
+                        );
+                    })}
+                </div>
+                <div className={'flex justify-center items-center mt-5'}>
+                    <button
+                        className={'w-1/2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold text-lg rounded-lg p-2 mt-10 hover:cursor-pointer hover:opacity-90 hover:scale-105 transition-all'}
+                        onClick={generateSchedule}
+                    >
+                        Generar planificación
+                    </button>
+                </div>
+                {schedule &&
+                    <div className={'flex flex-col items-center w-full mt-10'}>
+                        <div className={'w-full px-10'}>
+                            <Schedule blockSchedules={schedule.schedule}/>
+                        </div>
+                        <div className={'flex mt-5'}>
+                            <img className={' p-5'}
+                                 src={`http://localhost:5000/static/${schedule.chartUrl}`}
+                                 alt={'chart'}/>
+                        </div>
+                    </div>
+
+                }
+            </>
+
+        }
+
 
         <button
             className={'group p-4  bg-indigo-200 shadow-indigo-200 shadow-lg flex justify-center items-center rounded-xl fixed end-16 bottom-20 hover:cursor-pointer hover:bg-indigo-300 transition-all'}

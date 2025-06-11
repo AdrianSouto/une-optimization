@@ -32,3 +32,17 @@ export interface IServerDataResponse {
     totalDeficit: number
     blockEnergyDetails: IBlockEnergyDetailsResponse[]
 }
+
+export interface ISchedulerResponse {
+    chartUrl: string
+    schedule: ISchedule[]
+}
+
+export interface ISchedule {
+    blockNumber: number
+    schedule: {
+        dayOfWeek: number
+        startCut: number
+        endCut: number
+    }[]
+}

@@ -21,11 +21,11 @@ export default function ShowServerData({data}: {data: IServerDataResponse}){
                              className={'flex flex-col space-y-2 p-5 border-2 bg-indigo-50 border-indigo-600 rounded-md'}>
                             <h3 className={'text-lg font-bold text-slate-800'}>{province.name}</h3>
                             <div className={'flex flex-col space-y-2'}>
-                                <h4 className={'text-base font-semibold text-slate-800'}>Demanda: {province.demand} MW</h4>
-                                <h4 className={'text-base font-semibold text-slate-800'}>Asignado: {province.assigned} MW</h4>
-                                <h4 className={'text-base font-semibold text-slate-800'}>Déficit: {province.deficit} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Demanda: {province.demand.toFixed(2)} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Asignado: {province.assigned.toFixed(2)} MW</h4>
+                                <h4 className={'text-base font-semibold text-slate-800'}>Déficit: {province.deficit.toFixed(2)} MW</h4>
                                 <h4 className={'text-base font-semibold text-slate-800'}>Horas de
-                                    corte: {province.powerCutHours} h</h4>
+                                    corte: {province.powerCutHours.toFixed(2)} h</h4>
                             </div>
                         </div>
                     ))}

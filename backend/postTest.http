@@ -16,8 +16,8 @@ Content-Type: application/json
     "demand": 300,
     "id": 0,
     "name": "Pinar del Rio",
-    "powerCutHours": 13.721560348450458
+    "powerCutHours": 4
   },
-  "blocksQuantity": 4
+  "blocksQuantity": 5
 }
 ###
