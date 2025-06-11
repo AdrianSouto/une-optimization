@@ -96,11 +96,11 @@ def execute_optimization(provincesDemand: List[Dict[str, Any]],
     deficit: List[float] = [demanda[i] - asignadoResult.x[i] for i in range(len(demanda))]
 
     # Plot the results
-    plt.plot(xdata, demanda, 'ro')
-    plt.plot(xdata, asignadoResult.x, 'bo')
+    plt.plot(xdata, demanda, 'ro', label='Demanda')  # rojo
+    plt.plot(xdata, asignadoResult.x, 'bo', label='Asignados')  # azul
     # Eliminar la línea que plotea el déficit: plt.plot(xdata, deficit, 'go')
     plt.xticks(ticks=xdata, labels=provinceMapper, rotation=45, ha='right')
-    plt.legend(['Demanda', 'Asignados'])  # Actualizar la leyenda sin "Deficit"
+    plt.legend()
     plt.savefig(f"static\\optimization_result.png")
     plt.show()
 
